@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSim DDoS Lab</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+    <header id="status-bar">
+        <div class="logo">
+            <h1>NetSim DDoS Lab</h1>
+        </div>
+        <div class="status-indicators">
+            <span id="sim-status" class="badge badge-ok">Simulation active</span>
+            <span id="attack-status" class="badge badge-idle">Aucune attaque</span>
+            <span id="clock" class="clock"></span>
+        </div>
+    </header>
+
+    <div id="alert-banner" class="alert-banner hidden">
+        <span id="alert-text"></span>
+        <button id="alert-close" onclick="dismissAlert()">X</button>
+    </div>
+
+    <div class="main-container">
+        <div class="left-column">
+            <div class="card network-card">
+                <div class="card-header">
+                    <h3>Topologie Reseau</h3>
+                    <div class="card-controls">
+                        <button id="btn-reset" class="btn btn-sm" onclick="resetSim()">Reset</button>
+                    </div>
+                </div>
+                <canvas id="network-canvas"></canvas>
+            </div>
+
+            <div class="card control-card">
+                <div class="card-header">
+                    <h3>Panneau d'Attaque</h3>
+                </div>
+                <div class="control-grid">
+                    <button class="attack-btn" data-attack="syn_flood" onclick="startAttack('syn_flood')">
+                        <span class="attack-type">TCP</span>
+                        <span class="attack-name">SYN Flood</span>
+                        <span class="attack-desc">Saturation du handshake TCP</span>
+                    </button>
+                    <button class="attack-btn" data-attack="udp_flood" onclick="startAttack('udp_flood')">
+                        <span class="attack-type">UDP</span>
+                        <span class="attack-name">UDP Flood</span>
+                        <span class="attack-desc">Datagrammes sur ports aleatoires</span>
+                    </button>
+                    <button class="attack-btn" data-attack="dns_amplification" onclick="startAttack('dns_amplification')">
+                        <span class="attack-type">DNS</span>
+                        <span class="attack-name">DNS Amplification</span>
+                        <span class="attack-desc">Facteur d'amplification x50-100</span>
+                    </button>
+                    <button class="attack-btn" data-attack="http_flood" onclick="startAttack('http_flood')">
+                        <span class="attack-type">HTTP</span>
+                        <span class="attack-name">HTTP Flood</span>
+                        <span class="attack-desc">Requetes applicatives L7</span>
+                    </button>
+                </div>
+                <div id="attack-controls" class="attack-controls hidden">
+                    <div class="intensity-bar">
+                        <label>Intensite : <span id="intensity-value">50%</span></label>
+                        <input type="range" id="intensity-slider" min="1" max="100" value="50"
+                               oninput="changeIntensity(this.value)">
+                    </div>
+                    <button class="btn btn-stop" onclick="stopAttack()">Arreter l'attaque</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="card metrics-card">
+                <div class="card-header">
+                    <h3>Metriques Temps Reel</h3>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-box" id="metric-packets">
+                        <div class="metric-value" id="val-packets">0</div>
+                        <div class="metric-label">Paquets/s</div>
+                    </div>
+                    <div class="metric-box" id="metric-bandwidth">
+                        <div class="metric-value" id="val-bandwidth">5%</div>
+                        <div class="metric-label">Bande passante</div>
+                    </div>
+                    <div class="metric-box" id="metric-cpu">
+                        <div class="metric-value" id="val-cpu">5%</div>
+                        <div class="metric-label">CPU Serveur</div>
+                    </div>
+                    <div class="metric-box" id="metric-backlog">
+                        <div class="metric-value" id="val-backlog">0</div>
+                        <div class="metric-label">Backlog connexions</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h3>Evolution Temps Reel</h3>
+                    <div class="chart-legend">
+                        <span><span class="dot dot-cyan"></span> Paquets/s</span>
+                        <span><span class="dot dot-green"></span> Bande passante</span>
+                        <span><span class="dot dot-orange"></span> Backlog</span>
+                        <span><span class="dot dot-red"></span> CPU</span>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="live-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="card logs-card">
+                <div class="card-header">
+                    <h3>Logs Temps Reel</h3>
+                    <div class="card-controls">
+                        <button class="btn btn-sm" onclick="clearLogs()">Effacer</button>
+                    </div>
+                </div>
+                <div class="logs-container" id="logs-container">
+                    <div class="log-empty">En attente d'evenements...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="network-canvas.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
