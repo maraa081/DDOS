@@ -1,7 +1,7 @@
 {
   "name": "netsim-ddos-lab",
   "version": "1.0.0",
-  "description": "NetSim DDoS Lab - Simulation réseau interactive avec attaques DDoS temps réel",
+  "description": "NetSim DDoS Lab - Simulation reseau interactive avec attaques DDoS temps reel",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

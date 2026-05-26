@@ -121,7 +121,7 @@ sim.on('alert', (data) => {
 // ─── DÉMARRAGE ────────────────────────────────────────────
 
 server.listen(PORT, '127.0.0.1', () => {
-    console.log(`NetSim DDoS Lab démarré sur http://127.0.0.1:${PORT}`);
+    console.log(`NetSim DDoS Lab demarre sur http://127.0.0.1:${PORT}`);
     console.log(`Socket.IO actif, en attente de connexions...`);
     sim.start();
 });
